@@ -49,6 +49,7 @@ exports.book_list = (req, res, next) => {
       }
       //Successful, so render
       res.render("book_list", { title: "Book List", book_list: list_books });
+      console.log(list_books);
     });
 
   //res.send("NOT IMPLEMENTED: Book list");
