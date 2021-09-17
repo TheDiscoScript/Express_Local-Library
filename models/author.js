@@ -12,14 +12,15 @@ const AuthorSchema = new Schema({
 
 //In Mongoose, a virtual is a property that is not stored in MongoDB.
 // Virtuals are typically used for computed properties on documents.
+//BTW MONGOOSE DOESN'T SUPPORT arrow function, kekW
 
 //Virtual for author's full name
-AuthorSchema.virtual("name").get(() => {
+AuthorSchema.virtual("name").get(function () {
   return this.family_name + ", " + this.first_name;
 });
 
 //Virtual for author's lifespan
-AuthorSchema.virtual("lifespan").get(() => {
+AuthorSchema.virtual("lifespan").get(function () {
   let lifetime_string = "";
   if (this.date_of_birth) {
     lifetime_string = DateTime.fromJSDate(this.date_of_birth).toLocaleString(
@@ -36,7 +37,7 @@ AuthorSchema.virtual("lifespan").get(() => {
 });
 
 //Virtual for author's URL
-AuthorSchema.virtual("url").get(() => {
+AuthorSchema.virtual("url").get(function () {
   return "/catalog/author/" + this._id;
 });
 

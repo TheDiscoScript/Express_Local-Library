@@ -7,7 +7,7 @@ const GenreSchema = new Schema({
 });
 
 //virtual - viz author.js
-GenreSchema.virtual("url").get(() => {
+GenreSchema.virtual("url").get(function () {
   return "/catalog/genre/" + this._id;
 });
 
