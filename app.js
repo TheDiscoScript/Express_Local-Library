@@ -9,7 +9,12 @@ const indexRouter = require("./routes/index");
 const usersRouter = require("./routes/users");
 const catalogRouter = require("./routes/catalog");
 
+var compression = require("compression");
+var helmet = require("helmet");
+
 var app = express();
+app.use(compression()); //Compress all routes
+app.use(helmet());
 
 //connect to MongoDB
 //Set up mongoose connection

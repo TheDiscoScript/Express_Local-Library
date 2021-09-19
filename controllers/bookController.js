@@ -207,13 +207,71 @@ exports.book_create_post = [
 ];
 
 // Display book delete form on GET.
-exports.book_delete_get = (req, res) => {
-  res.send("NOT IMPLEMENTED: Book delete GET");
+exports.book_delete_get = (req, res, next) => {
+  async.parallel(
+    {
+      book: (callback) => {
+        Book.findById(req.params.id)
+          .populate("author")
+          .populate("genre")
+          .exec(callback);
+      },
+      book_instance: (callback) => {
+        BookInstance.find({ book: req.params.id }).exec(callback);
+      },
+    },
+    (err, results) => {
+      if (err) return next(err);
+      if (results.book == null) {
+        let err = new Error("Not found");
+        err.status = 404;
+        return next(err);
+      }
+      res.render("book_delete", { title: "Delete Book", book: results.book });
+    }
+  );
+
+  //  res.send("NOT IMPLEMENTED: Book delete GET");
 };
 
 // Handle book delete on POST.
-exports.book_delete_post = (req, res) => {
-  res.send("NOT IMPLEMENTED: Book delete POST");
+exports.book_delete_post = (req, res, next) => {
+  async.parallel(
+    {
+      book: function (callback) {
+        Book.findById(req.body.bookid).exec(callback);
+      },
+      book_instance: function (callback) {
+        BookInstance.find({ book: req.body.authorid }).exec(callback);
+      },
+    },
+    function (err, results) {
+      if (err) {
+        return next(err);
+      }
+      // Success
+      if (results.book_instance.length > 0) {
+        // Author has books. Render in same way as for GET route.
+        res.render("book_delete", {
+          title: "Delete Book",
+          book: results.book,
+          book_instance: results.book_instance,
+        });
+        return;
+      } else {
+        // Author has no books. Delete object and redirect to the list of authors.
+        Book.findByIdAndRemove(req.body.bookid, function deleteBook(err) {
+          if (err) {
+            return next(err);
+          }
+          // Success - go to author list
+          res.redirect("/catalog/books");
+        });
+      }
+    }
+  );
+
+  //res.send("NOT IMPLEMENTED: Book delete POST");
 };
 
 // Display book update form on GET.
